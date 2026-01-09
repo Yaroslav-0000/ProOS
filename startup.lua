@@ -1,299 +1,316 @@
--- GUI OS for CC: Tweaked with toms-peripherals
--- Подключаем GPU из toms-peripherals
+-- ============================
+-- GUI OS for CC: Tweaked
+-- ============================
+
+-- Подключаем GPU (как в Морском бое)
 local gpu = peripheral.find("tm_gpu")
-
 if not gpu then
-    -- Пробуем найти обычный GPU из CC
     gpu = peripheral.find("gpu")
+    if not gpu then
+        print("No GPU found! Using terminal...")
+        shell.execute()
+        return
+    end
 end
 
-if not gpu then
-    print("No GPU found! Starting CLI...")
-    local shell = require("shell")
-    shell.execute()
-    return
-end
-
--- Получаем монитор
-local monitor = peripheral.find("monitor") or peripheral.find("tm_monitor")
-
+-- Подключаем монитор
+local monitor = peripheral.find("tm_monitor") or peripheral.find("monitor")
 if monitor then
-    -- Подключаем GPU к монитору
     gpu.bind(monitor)
 end
 
--- Устанавливаем разрешение
-local maxW, maxH = gpu.maxResolution()
-if maxW >= 80 and maxH >= 25 then
-    gpu.setResolution(80, 25)
-else
-    gpu.setResolution(maxW, maxH)
-end
-
-local w, h = gpu.getResolution()
+-- Инициализация GPU (как в твоем коде)
+gpu.sync()
+gpu.refreshSize()
+local width, height = gpu.getSize()
 
 -- Системные переменные
 local running = true
 local apps = {}
 local windows = {}
-local currentPath = "/"
+local selectedApp = nil
 
--- Цвета
+-- Цвета (как в Морском бое)
 local colors = {
-    bg = 0x000000,
-    taskbar = 0x1E1E1E,
-    window = 0x2D2D30,
+    background = 0x000000,
+    taskbar = 0x333333,
+    window = 0x222222,
     text = 0xFFFFFF,
-    button = 0x0E70C4,
-    close = 0xFF0000
+    button = 0x444444,
+    close = 0xFF0000,
+    title = 0x007ACC
 }
 
 -- ============================
--- ФУНКЦИИ GUI
+-- ФУНКЦИИ РИСОВАНИЯ
 -- ============================
 
 function clearScreen()
-    gpu.setBackground(colors.bg)
-    gpu.fill(1, 1, w, h, " ")
+    gpu.fill(colors.background)
+    gpu.sync()
 end
 
 function drawTaskbar()
-    gpu.setBackground(colors.taskbar)
-    gpu.fill(1, h, w, 1, " ")
-    gpu.setForeground(colors.text)
-    gpu.set(2, h, "START")
+    gpu.filledRectangle(1, height-1, width, 1, colors.taskbar)
+    gpu.drawText(2, height, "Start", colors.text, colors.taskbar, 1, 0)
+    gpu.sync()
 end
 
 function drawDesktop()
-    -- Рисуем иконки приложений
-    local x, y = 2, 2
+    local x, y = 3, 3
     for i, app in ipairs(apps) do
-        gpu.setForeground(colors.text)
-        gpu.set(x, y, app.icon or "APP")
-        gpu.set(x, y + 1, app.name)
-        y = y + 3
-        if y > h - 5 then
-            y = 2
-            x = x + 15
+        gpu.drawText(x, y, app.icon, colors.text, colors.background, 1, 0)
+        gpu.drawText(x-1, y+1, app.name, colors.text, colors.background, 1, 0)
+        y = y + 4
+        if y > height - 5 then
+            y = 3
+            x = x + 12
         end
     end
-end
-
-function createWindow(title, content, x, y, width, height)
-    local window = {
-        id = #windows + 1,
-        title = title,
-        content = content,
-        x = x or 5,
-        y = y or 3,
-        width = width or 50,
-        height = height or 15,
-        active = true
-    }
-    
-    windows[window.id] = window
-    return window.id
 end
 
 function drawWindow(id)
     local win = windows[id]
-    if not win then return end
+    if not win or not win.active then return end
     
     -- Фон окна
-    gpu.setBackground(colors.window)
-    gpu.fill(win.x, win.y, win.width, win.height, " ")
+    gpu.filledRectangle(win.x, win.y, win.width, win.height, colors.window)
     
     -- Заголовок
-    gpu.setBackground(colors.button)
-    gpu.fill(win.x, win.y, win.width, 1, " ")
-    gpu.setForeground(colors.text)
-    gpu.set(win.x + 1, win.y, win.title)
+    gpu.filledRectangle(win.x, win.y, win.width, 1, colors.title)
+    gpu.drawText(win.x+1, win.y, win.title, colors.text, colors.title, 1, 0)
     
     -- Кнопка закрытия
-    gpu.setBackground(colors.close)
-    gpu.set(win.x + win.width - 1, win.y, "X")
+    gpu.set(win.x + win.width - 1, win.y, "X", colors.close, colors.title)
     
     -- Содержимое
     if type(win.content) == "function" then
-        -- Сохраняем текущую позицию курсора
         local oldX, oldY = gpu.get()
-        gpu.set(win.x + 2, win.y + 2)
+        gpu.set(win.x+2, win.y+2)
         win.content()
         gpu.set(oldX, oldY)
-    elseif type(win.content) == "string" then
-        gpu.set(win.x + 2, win.y + 2, win.content)
+    elseif win.content then
+        gpu.drawText(win.x+2, win.y+2, win.content, colors.text, colors.window, 1, 0)
     end
+    
+    gpu.sync()
 end
 
 -- ============================
--- ДРАЙВЕРА И УСТАНОВЩИК
+-- УСТАНОВЩИК ПАКЕТОВ
 -- ============================
 
-function detectDrivers()
-    local drivers = {}
-    
-    -- Ищем драйвера toms-peripherals
-    local peripherals = peripheral.getNames()
-    
-    for _, name in ipairs(peripherals) do
-        local pType = peripheral.getType(name)
-        if pType:find("tm_") then
-            table.insert(drivers, {
-                name = name,
-                type = pType,
-                vendor = "toms-peripherals"
-            })
-        elseif pType == "monitor" or pType == "gpu" then
-            table.insert(drivers, {
-                name = name,
-                type = pType,
-                vendor = "CC:Tweaked"
-            })
+function showInstaller()
+    local winId = #windows + 1
+    windows[winId] = {
+        title = "Package Installer",
+        x = 10, y = 5,
+        width = 40, height = 15,
+        active = true,
+        content = function()
+            gpu.drawText(2, 2, "Available packages:", colors.text, colors.window, 1, 0)
+            gpu.drawText(2, 4, "1. File Manager", colors.text, colors.window, 1, 0)
+            gpu.drawText(2, 5, "2. Text Editor", colors.text, colors.window, 1, 0)
+            gpu.drawText(2, 6, "3. Browser", colors.text, colors.window, 1, 0)
+            gpu.drawText(2, 8, "Select (1-3):", colors.text, colors.window, 1, 0)
         end
-    end
-    
-    return drivers
+    }
 end
 
-function installerApp()
-    clearScreen()
-    
+function installPackage(pkgNum)
     local packages = {
-        {name = "File Manager", id = "fm", desc = "Manage files"},
-        {name = "Text Editor", id = "te", desc = "Edit text files"},
-        {name = "Browser", id = "br", desc = "Web browser"},
-        {name = "Settings", id = "st", desc = "System settings"}
+        {name = "File Manager", icon = "[FM]"},
+        {name = "Text Editor", icon = "[TE]"},
+        {name = "Browser", icon = "[BR]"}
     }
     
-    print("=== Package Installer ===")
-    print("Available packages:")
-    
-    for i, pkg in ipairs(packages) do
-        print(i .. ". " .. pkg.name .. " - " .. pkg.desc)
-    end
-    
-    print("\nSelect package to install (1-" .. #packages .. "):")
-    
-    local choice = tonumber(io.read())
-    if choice and packages[choice] then
-        local pkg = packages[choice]
-        
-        -- "Устанавливаем" пакет
+    if pkgNum >= 1 and pkgNum <= 3 then
+        local pkg = packages[pkgNum]
         table.insert(apps, {
             name = pkg.name,
-            icon = "[" .. pkg.id:upper() .. "]",
+            icon = pkg.icon,
             run = function()
-                createWindow(pkg.name, "This is " .. pkg.name, 10, 5, 40, 10)
+                createAppWindow(pkg.name)
             end
         })
-        
-        print("Installed: " .. pkg.name)
-    else
-        print("Invalid choice!")
+        return true
     end
-    
-    os.sleep(2)
+    return false
+end
+
+function createAppWindow(title)
+    local winId = #windows + 1
+    windows[winId] = {
+        title = title,
+        x = 15, y = 10,
+        width = 30, height = 10,
+        active = true,
+        content = "This is " .. title .. "\nWindow content here"
+    }
 end
 
 -- ============================
 -- СИСТЕМНЫЕ ПРИЛОЖЕНИЯ
 -- ============================
 
--- Добавляем системные приложения
+-- Добавляем базовые приложения
 table.insert(apps, {
     name = "Terminal",
     icon = "[TERM]",
     run = function()
-        local term = require("term")
-        term.clear()
+        clearScreen()
+        gpu.set(1, 1, "=== Terminal ===", colors.text, colors.background, 1, 0)
         shell.execute()
     end
 })
 
 table.insert(apps, {
     name = "Installer",
-    icon = "[INST]",
-    run = installerApp
-})
-
-table.insert(apps, {
-    name = "Drivers",
-    icon = "[DRV]",
-    run = function()
-        local drivers = detectDrivers()
-        local winId = createWindow("Drivers", "", 10, 5, 40, 15)
-        
-        local content = "Detected drivers:\n\n"
-        for _, drv in ipairs(drivers) do
-            content = content .. drv.type .. ": " .. drv.name .. "\n"
-        end
-        
-        windows[winId].content = content
-    end
+    icon = "[INS]",
+    run = showInstaller
 })
 
 table.insert(apps, {
     name = "Files",
-    icon = "[FILE]",
+    icon = "[FLS]",
     run = function()
-        local fs = require("filesystem")
-        local list = fs.list(currentPath)
-        
-        local content = "Path: " .. currentPath .. "\n\n"
-        for item in list do
-            content = content .. item .. "\n"
-        end
-        
-        createWindow("File Manager", content, 10, 5, 40, 15)
+        local winId = #windows + 1
+        windows[winId] = {
+            title = "File Manager",
+            x = 10, y = 8,
+            width = 50, height = 12,
+            active = true,
+            content = function()
+                local fs = require("filesystem")
+                gpu.drawText(2, 2, "Directory: /", colors.text, colors.window, 1, 0)
+                local y = 4
+                for file in fs.list("/") do
+                    gpu.drawText(3, y, file, colors.text, colors.window, 1, 0)
+                    y = y + 1
+                end
+            end
+        }
     end
 })
+
+-- ============================
+-- ОБРАБОТКА СОБЫТИЙ
+-- ============================
+
+function handleTouch(x, y)
+    -- Проверяем панель задач
+    if y == height then
+        if x >= 2 and x <= 7 then
+            -- Start menu
+            showStartMenu()
+        end
+        return
+    end
+    
+    -- Проверяем иконки приложений
+    local iconX, iconY = 3, 3
+    for i, app in ipairs(apps) do
+        if x >= iconX-1 and x <= iconX + #app.name and
+           y >= iconY and y <= iconY + 2 then
+            app.run()
+            return
+        end
+        iconY = iconY + 4
+        if iconY > height - 5 then
+            iconY = 3
+            iconX = iconX + 12
+        end
+    end
+    
+    -- Проверяем окна
+    for id, win in pairs(windows) do
+        if win.active then
+            -- Кнопка закрытия
+            if x == win.x + win.width - 1 and y == win.y then
+                win.active = false
+                return
+            end
+            
+            -- Содержимое окна
+            if x >= win.x and x <= win.x + win.width and
+               y >= win.y and y <= win.y + win.height then
+                -- Можно добавить обработку кликов внутри окна
+                return
+            end
+        end
+    end
+end
+
+function showStartMenu()
+    local menuHeight = 8
+    gpu.filledRectangle(2, height - menuHeight - 1, 15, menuHeight, colors.window)
+    gpu.rectangle(2, height - menuHeight - 1, 15, menuHeight, colors.title)
+    
+    local items = {"Terminal", "Files", "Installer", "Exit"}
+    for i, item in ipairs(items) do
+        gpu.drawText(3, height - menuHeight + i - 1, item, colors.text, colors.window, 1, 0)
+    end
+    gpu.sync()
+end
 
 -- ============================
 -- ГЛАВНЫЙ ЦИКЛ
 -- ============================
 
 function main()
+    clearScreen()
+    drawDesktop()
+    drawTaskbar()
+    gpu.sync()
+    
+    print("GUI OS Started. Screen: " .. width .. "x" .. height)
+    
     while running do
-        clearScreen()
-        drawDesktop()
-        drawTaskbar()
+        local event, p, x, y, isShift = os.pullEvent()
         
-        -- Рисуем все окна
-        for id, win in pairs(windows) do
-            drawWindow(id)
-        end
-        
-        gpu.flush()
-        
-        -- Обработка событий (упрощенная)
-        local event = {os.pullEvent()}
-        
-        if event[1] == "key" then
-            local key = event[2]
+        if event == "tm_monitor_touch" or event == "monitor_touch" then
+            handleTouch(x, y)
             
-            if key == 1 then -- Escape
-                running = false
-            elseif key == 28 then -- Enter
-                -- Открываем меню
-                createWindow("System Menu", "1. Shutdown\n2. Reboot\n3. Apps", 5, 5, 30, 8)
+            -- Перерисовываем
+            clearScreen()
+            drawDesktop()
+            drawTaskbar()
+            
+            -- Рисуем активные окна
+            for id, win in pairs(windows) do
+                if win.active then
+                    drawWindow(id)
+                end
             end
-        elseif event[1] == "terminate" then
+            gpu.sync()
+            
+        elseif event == "key" then
+            if p == 1 then -- Escape
+                running = false
+            elseif p == 28 then -- Enter
+                showInstaller()
+            end
+        elseif event == "terminate" then
             running = false
         end
-        
-        os.sleep(0.1)
     end
     
     -- Завершение работы
     clearScreen()
-    gpu.setForeground(colors.text)
-    gpu.set(1, 1, "Goodbye!")
+    gpu.set(1, 1, "Goodbye!", colors.text, colors.background, 1, 0)
+    gpu.sync()
+    os.sleep(1)
+    clearScreen()
 end
 
 -- ============================
--- ЗАПУСК
+-- ЗАПУСК СИСТЕМЫ
 -- ============================
 
-print("Starting GUI OS...")
-os.sleep(1)
-main()
+-- Запускаем GUI если есть экран, иначе терминал
+if width > 0 and height > 0 then
+    main()
+else
+    print("Starting terminal mode...")
+    shell.execute()
+end
