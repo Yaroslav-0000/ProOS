@@ -2,6 +2,8 @@ local url = "https://api.github.com/repos/Yaroslav-0000/ProOS/contents"
 local res = http.get(url, {["User-Agent"]="CC:T ProOS Installer"})
 if not res then error("HTTP disabled or request failed") end
 
+
+print("Start install")
 local data = textutils.unserializeJSON(res.readAll())
 for _, file in ipairs(data) do
   if file.type == "file" then
