@@ -3,7 +3,8 @@ running = true
 
 while running do
     -- Main 
-    local cmd = read(path_cmd .. "&: ")
+    write(path_cmd .. "&: ")
+    local cmd = read()
     if cmd == "close" or cmd == "exit" then
         running = false
     end
