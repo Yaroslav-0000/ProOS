@@ -1,7 +1,7 @@
 local gpu = peripheral.find("tm_gpu")
 gpu.sync()
 gpu.refreshSize()
-gpu.fill(0x333333)
+gpu.fill(0x0000FF)
 gpu.filledRectangle(2, 2, 10, 10, FF2400)
 gpu.rectangle(2, 2, 10, 10, 0x11FF00)
 gpu.sync()
