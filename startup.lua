@@ -312,5 +312,4 @@ if width > 0 and height > 0 then
     main()
 else
     print("Starting terminal mode...")
-    shell.execute()
 end
