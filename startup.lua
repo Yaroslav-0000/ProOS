@@ -5,6 +5,8 @@ if res then
   f.write(res.readAll())
   f.close()
   print("downloaded!")
+  os.sleep(1)
+  os.reboot()
 else
   print("Error downloading OS")
 end
