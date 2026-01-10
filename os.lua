@@ -1,13 +1,14 @@
-local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
-local res_os = http.get(url_os)
-if res_os then
-  local f = fs.open("startup.lua", "w")
-  f.write(res_os.readAll())
-  f.close()
-  print("downloaded!")
-  os.sleep(1)
-  os.reboot()
-else
-  print("Error downloading OS")
+print("Start-OS")
+
+local gpu = peripheral.find("tm_gpu")
+gpu.refreshSize()
+gpu.fill(0x111111)
+gpu.sync()
+
+x, y = gpu.getSize()
+print(x .. y .. "Size")
+
+while true do
+    local event, x, y, sneaking = os.pullEvent("tm_monitor_touch")
+    print("Touch at: " .. x .. " " .. y)
 end
- 
