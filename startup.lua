@@ -1,8 +1,8 @@
-local url = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
-local res = http.get(url)
-if res then
+local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
+local res_os = http.get(ur_os)
+if res_os then
   local f = fs.open("startup.lua", "w")
-  f.write(res.readAll())
+  f.write(res_os.readAll())
   f.close()
   print("downloaded!")
   os.sleep(1)
