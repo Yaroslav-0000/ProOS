@@ -3,4 +3,5 @@ if active_os == nil then
     settings.set("http.enable", true)
     os.reboot()
 end
-shell.run("wget", "", "startup.lua")
+shell.run("wget", "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua
+", "startup.lua")
