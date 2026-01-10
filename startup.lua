@@ -1,6 +1,11 @@
-if active_os == nil then
-    active_os = true
-    settings.set("http.enable", true)
-    os.reboot()
+local url = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
+local res = http.get(url)
+if res then
+  local f = fs.open("startup.lua", "w")
+  f.write(res.readAll())
+  f.close()
+  print("downloaded!")
+else
+  print("Error downloading OS")
 end
-shell.run("wget", "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua", "startup.lua")
+ 
