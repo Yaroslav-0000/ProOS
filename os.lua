@@ -2,6 +2,14 @@ print("Start-OS")
 
 mon = term.current()
 
+mon.clear()
+
+mon.setBackgroundColor(colors.blue)
+
+mon.setBackgroundColor(colors.red)
+
+
+
 running = true
 
 local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
