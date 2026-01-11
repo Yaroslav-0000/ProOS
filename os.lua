@@ -1,6 +1,6 @@
 print("Start-OS")
 
-mon = peripheral.find("monitor")
+mon = term
 local keyboard = peripheral.find("tm_keyboard")
 if keyboard then
     keyboard.setFireNativeEvents(true)
@@ -54,7 +54,7 @@ function events_chek()
     end
 end
 function getMonitor()
-    local mon = peripheral.find("monitor")
+    local mon = term
     return mon
 end
 function screen_render()
