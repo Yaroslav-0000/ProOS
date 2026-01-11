@@ -81,6 +81,18 @@ function UNLimitedFunS()
 end
 function createUserMenu()
     mon.setBackgroundColor(colors.blue)
+    local width, height = mon.getSize()
+    local rectW = 10
+    local rectH = 6
+
+    local startX = math.floor((width - rectW) / 2) + 1
+    local startY = math.floor((height - rectH) / 2) + 1
+
+    for y = 0, rectH - 1 do
+        mon.setCursorPos(startX, startY + y)
+        mon.setBackgroundColor(colors.black)
+        mon.write(string.rep(" ", rectW))
+    end
 end
 function ProOS()
     if not fs.exists("users") then
