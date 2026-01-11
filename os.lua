@@ -94,12 +94,13 @@ function createUserMenu()
     local startY = math.floor((height - rectH) / 2) + 1
 
     table.insert(screen_renderer, function()
-for y = 0, rectH - 1 do
-    mon.setCursorPos(startX, startY + y)
-    mon.setBackgroundColor(colors.black)
-    mon.write(string.rep(" ", rectW))
-    mon.setBackgroundColor(colors.blue)
-end
+    for y = 0, rectH - 1 do
+        mon.setCursorPos(startX, startY + y)
+        mon.setBackgroundColor(colors.black)
+        mon.write(string.rep(" ", rectW))
+        mon.setBackgroundColor(colors.blue)
+    end
+end)
 end
 function ProOS()
     if not fs.exists("users") then
