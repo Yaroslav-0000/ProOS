@@ -89,19 +89,22 @@ function drawChar(x, y, char, color)
         local line = glyph[row]
         for col = 1, 5 do
             if line:sub(col, col) == "1" then
-                gpu.filledRectangle(x, y, x, y, color)
+                -- каждый "пиксель" рисуем прямоугольником 1x1
+                gpu.filledRectangle(x + col - 1, y + row - 1, x + col - 1, y + row - 1, color)
             end
         end
     end
 end
+
 function drawText(x, y, text, color)
     local cx = x
     for i = 1, #text do
         local ch = text:sub(i, i)
         drawChar(cx, y, ch, color)
-        cx = cx + 6
+        cx = cx + 6 -- 5 пикселей символ + 1 пробел
     end
 end
+
 
 
 
