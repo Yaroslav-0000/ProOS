@@ -48,6 +48,8 @@ desktop_renderer_fun_s = {}
 drivers_updatede_fun_s = {}
 desktop_see = false
 
+screen_renderer = {}
+
 function events_chek()
     local event, keyCode = os.pullEvent("key")
     local keyName = keys.getName(keyCode)
@@ -62,10 +64,14 @@ function getMonitor()
     return mon
 end
 function screen_render()
+    mon.clear()
     if desktop_see then
         for i, func in ipairs(desktop_renderer_fun_s) do
             func()
         end
+    end
+    for i, func in ipairs(screen_renderer) do
+        func()
     end
 end
 function drivers_update()
@@ -87,12 +93,13 @@ function createUserMenu()
     local startX = math.floor((width - rectW) / 2) + 1
     local startY = math.floor((height - rectH) / 2) + 1
 
-    for y = 0, rectH - 1 do
-        mon.setCursorPos(startX, startY + y)
-        mon.setBackgroundColor(colors.black)
-        mon.write(string.rep(" ", rectW))
-        mon.setBackgroundColor(colors.blue)
-    end
+    table.insert(screen_renderer, function()
+for y = 0, rectH - 1 do
+    mon.setCursorPos(startX, startY + y)
+    mon.setBackgroundColor(colors.black)
+    mon.write(string.rep(" ", rectW))
+    mon.setBackgroundColor(colors.blue)
+end
 end
 function ProOS()
     if not fs.exists("users") then
