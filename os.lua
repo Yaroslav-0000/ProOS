@@ -6,6 +6,7 @@ if keyboard then
     keyboard.setFireNativeEvents(true)
 end
 gpu.refreshSize()
+gpu.setSize(16)
 gpu.fill(0x111111)
 gpu.sync()
 
