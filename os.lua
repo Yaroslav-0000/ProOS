@@ -20,6 +20,7 @@ function screen_render()
     gpu.sync()
 end
 function drivers_update()
+    print("UPDATE")
 end
 function UNLimitedFunS()
     screen_render()
