@@ -92,6 +92,7 @@ function createUserMenu()
         mon.setCursorPos(startX, startY + y)
         mon.setBackgroundColor(colors.black)
         mon.write(string.rep(" ", rectW))
+        mon.setBackgroundColor(colors.blue)
     end
 end
 function ProOS()
