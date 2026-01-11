@@ -83,7 +83,7 @@ function ProOS()
         desktop_see = true
     end
     table.insert(drivers_updatede_fun_s, function()
-            mon = peripheral.find("monitor")
+            mon = getMonitor()
 end)
 
     table.insert(desktop_renderer_fun_s, function()
