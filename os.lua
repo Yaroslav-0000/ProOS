@@ -50,6 +50,34 @@ desktop_see = false
 
 screen_renderer = {}
 
+function inputString(x, y, length, password)
+    local str = ""
+    local mon = term.current()
+    mon.setCursorPos(x, y)
+    while true do
+        local event, key = os.pullEvent()
+        if event == "key" then
+            if key == keys.enter then
+                break
+            elseif key == keys.backspace then
+                if #str > 0 then
+                    str = str:sub(1, #str-1)
+                    mon.setCursorPos(x + #str, y)
+                    mon.write(" ")
+                    mon.setCursorPos(x + #str, y)
+                end
+            else
+                local char = keys.getName(key)
+                if #char == 1 and #str < length then
+                    str = str .. char
+                    mon.write(password and "*" or char)
+                end
+            end
+        end
+    end
+    return str
+end
+
 function events_chek()
     local event, keyCode = os.pullEvent("key")
     local keyName = keys.getName(keyCode)
@@ -101,6 +129,28 @@ function createUserMenu()
             mon.setBackgroundColor(colors.blue)
         end
     end)
+    mon.setCursorPos(startX + 2, startY + 2)
+    mon.setBackgroundColor(colors.black)
+    mon.setTextColor(colors.white)
+    mon.write("Username: ")
+    local username = inputString(startX + 12, startY + 2, 20, false)
+
+    mon.setCursorPos(startX + 2, startY + 4)
+    mon.write("Password: ")
+    local password = inputString(startX + 12, startY + 4, 20, true)
+
+    -- Создание папки пользователя
+    if not fs.exists("users/"..username) then
+        fs.makeDir("users/"..username)
+    end
+
+    -- Создание файла qq.txt с паролем
+    local f = fs.open("users/"..username.."/qq.txt", "w")
+    f.writeLine(password)
+    f.close()
+
+    mon.setCursorPos(startX + 2, startY + 6)
+    mon.write("User created!")
 end
 function ProOS()
     if not fs.exists("users") then
