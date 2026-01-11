@@ -62,7 +62,6 @@ function getMonitor()
     return mon
 end
 function screen_render()
-    mon.clear()
     if desktop_see then
         for i, func in ipairs(desktop_renderer_fun_s) do
             func()
