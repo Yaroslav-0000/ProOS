@@ -12,8 +12,13 @@ running = true
 
 
 function events_chek()
-    local event, x, y, sneaking = os.pullEvent("tm_monitor_touch")
-    print("Touch at: " .. x .. " " .. y)
+    local event, keyCode = os.pullEvent("key")
+    local keyName = keys.getName(keyCode)
+    print("Key name: ", keyName)
+    if keyCode == keys.q then
+        print("Exiting...")
+        os.reboot()
+    end
 end
 function screen_render()
     gpu.fill(0x001100)
