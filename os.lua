@@ -1,10 +1,6 @@
 print("Start-OS")
 
-mon = term
-local keyboard = peripheral.find("tm_keyboard")
-if keyboard then
-    keyboard.setFireNativeEvents(true)
-end
+mon = term.current()
 
 running = true
 
@@ -86,9 +82,6 @@ function ProOS()
     else
         desktop_see = true
     end
-    table.insert(drivers_updatede_fun_s, function()
-            mon = getMonitor()
-end)
 
     table.insert(desktop_renderer_fun_s, function()
             
