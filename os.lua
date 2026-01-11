@@ -54,10 +54,10 @@ end
 function screen_render()
     gpu.fill(0x001100)
     gpu.sync()
-    os.sleep(0.2)
+    os.sleep(0.1)
     gpu.fill(0x009159)
     gpu.sync()
-    os.sleep(0.5)
+    os.sleep(0.1)
 end
 function drivers_update()
 end
