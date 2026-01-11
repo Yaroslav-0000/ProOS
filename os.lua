@@ -6,9 +6,6 @@ if keyboard then
     keyboard.setFireNativeEvents(true)
 end
 
-width, height = gpu.getSize()
-print(width .. height .. "Size")
-
 running = true
 
 local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
