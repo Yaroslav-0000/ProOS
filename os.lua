@@ -1,6 +1,6 @@
 print("Start-OS")
 
-local gpu = peripheral.find("tm_gpu")
+gpu = peripheral.find("tm_gpu")
 local keyboard = peripheral.find("tm_keyboard")
 if keyboard then
     keyboard.setFireNativeEvents(true)
