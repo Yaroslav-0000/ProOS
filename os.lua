@@ -37,7 +37,7 @@ if res_os then
         f.write(new_content)
         f.close()
         print("Downloaded and updated!")
-        os.sleep(1)
+        os.sleep(0.2)
         os.reboot()
     end
 else
@@ -77,7 +77,7 @@ end
 function UNLimitedFunS()
     screen_render()
     drivers_update()
-    os.sleep(0.05)
+    os.sleep(0.1)
 end
 function createUserMenu()
     mon.setBackgroundColor(colors.blue)
