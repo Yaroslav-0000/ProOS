@@ -46,6 +46,9 @@ else
     print("Error downloading OS")
 end
 
+desktop_renderer_fun_s = {}
+desktop_see = false
+
 function events_chek()
     local event, keyCode = os.pullEvent("key")
     local keyName = keys.getName(keyCode)
@@ -56,12 +59,12 @@ function events_chek()
     end
 end
 function screen_render()
-    gpu.fill(0x001100)
+    if desktop_see then
+        for i, func in ipairs(desktop_renderer_fun_s) do
+            func()
+        end
+    end
     gpu.sync()
-    os.sleep(1)
-    gpu.fill(0x009159)
-    gpu.sync()
-    os.sleep(1)
 end
 function drivers_update()
 end
@@ -69,6 +72,11 @@ function UNLimitedFunS()
     screen_render()
     drivers_update()
 end
-while running do
-    parallel.waitForAny(events_chek, UNLimitedFunS)
+function ProOS()
+    desktop_see = true
+    while running do
+        parallel.waitForAny(events_chek, UNLimitedFunS)
+    end
 end
+
+ProOS()
