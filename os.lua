@@ -81,6 +81,8 @@ FONT_5x8 = {
 }
 
 
+local PIXEL_SCALE = 3  -- каждый “пиксель” символа будет 3×3 блок
+
 function drawChar(x, y, char, color)
     local glyph = FONT_5x8[char]
     if not glyph then return end
@@ -89,12 +91,14 @@ function drawChar(x, y, char, color)
         local line = glyph[row]
         for col = 1, 5 do
             if line:sub(col, col) == "1" then
-                -- каждый "пиксель" рисуем прямоугольником 1x1
-                gpu.filledRectangle(x + col - 1, y + row - 1, x + col - 1, y + row - 1, color)
+                local px = x + (col-1)*PIXEL_SCALE
+                local py = y + (row-1)*PIXEL_SCALE
+                gpu.filledRectangle(px, py, px+PIXEL_SCALE-1, py+PIXEL_SCALE-1, color)
             end
         end
     end
 end
+
 
 function drawText(x, y, text, color)
     local cx = x
