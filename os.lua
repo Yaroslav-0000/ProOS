@@ -5,8 +5,11 @@ gpu.refreshSize()
 gpu.fill(0x111111)
 gpu.sync()
 
-x, y = gpu.getSize()
-print(x .. y .. "Size")
+width, height = gpu.getSize()
+print(width .. height .. "Size")
+
+running = true
+
 
 function events_chek()
     local event, x, y, sneaking = os.pullEvent("tm_monitor_touch")
@@ -26,4 +29,6 @@ function UNLimitedFunS()
     screen_render()
     drivers_update()
 end
-parallel.waitForAny(events_chek, UNLimitedFunS)
+while running do
+    parallel.waitForAny(events_chek, UNLimitedFunS)
+end
