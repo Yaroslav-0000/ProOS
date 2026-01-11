@@ -8,7 +8,21 @@ gpu.sync()
 x, y = gpu.getSize()
 print(x .. y .. "Size")
 
-while true do
+function events_chek()
     local event, x, y, sneaking = os.pullEvent("tm_monitor_touch")
     print("Touch at: " .. x .. " " .. y)
 end
+function screen_render()
+    gpu.fill(0x001100)
+    gpu.sync()
+    os.sleep(0.2)
+    gpu.fill(0x009159)
+    gpu.sync()
+end
+function drivers_update()
+end
+function UNLimitedFunS()
+    screen_render()
+    drivers_update()
+end
+parallel.waitForAny(events_chek, UNLimitedfunS)
