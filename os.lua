@@ -24,7 +24,6 @@ function screen_render()
     os.sleep(0.5)
 end
 function drivers_update()
-    print("UPDATE")
 end
 function UNLimitedFunS()
     screen_render()
