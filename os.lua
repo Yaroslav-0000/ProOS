@@ -1,6 +1,10 @@
 print("Start-OS")
 
 local gpu = peripheral.find("tm_gpu")
+local keyboard = peripheral.find("tm_keyboard")
+if keyboard then
+    keyboard.setFireNativeEvents(true)
+end
 gpu.refreshSize()
 gpu.fill(0x111111)
 gpu.sync()
