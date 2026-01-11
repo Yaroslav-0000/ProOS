@@ -26,4 +26,4 @@ function UNLimitedFunS()
     screen_render()
     drivers_update()
 end
-parallel.waitForAny(events_chek, UNLimitedfunS)
+parallel.waitForAny(events_chek, UNLimitedFunS)
