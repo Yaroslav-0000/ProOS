@@ -21,6 +21,7 @@ function screen_render()
     os.sleep(0.2)
     gpu.fill(0x009159)
     gpu.sync()
+    os.sleep(0.5)
 end
 function drivers_update()
     print("UPDATE")
