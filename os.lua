@@ -77,6 +77,7 @@ end
 function UNLimitedFunS()
     screen_render()
     drivers_update()
+    os.sleep(0.05)
 end
 function createUserMenu()
     mon.setBackgroundColor(colors.blue)
