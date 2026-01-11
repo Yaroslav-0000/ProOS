@@ -53,6 +53,10 @@ function events_chek()
         os.reboot()
     end
 end
+function getMonitor()
+    local mon = peripheral.find("monitor")
+    return mon
+end
 function screen_render()
     mon.clear()
     if desktop_see then
