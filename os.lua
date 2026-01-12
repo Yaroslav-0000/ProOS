@@ -8,6 +8,8 @@ mon.setBackgroundColor(colors.blue)
 
 mon.setBackgroundColor(colors.red)
 
+mon.setCursorBlink(false)
+
 
 
 running = true
@@ -91,6 +93,35 @@ function getMonitor()
     local mon = term
     return mon
 end
+
+function loadUsers()
+    UserUI.users = {}
+    if not fs.exists("users") then
+        fs.makeDir("users")
+    end
+    for _, u in ipairs(fs.list("users")) do
+        if fs.isDir("users/" .. u) then
+            table.insert(UserUI.users, u)
+        end
+    end
+end
+
+function saveUser(name, pass)
+    local dir = "users/" .. name
+    if fs.exists(dir) then return end
+    fs.makeDir(dir)
+    local f = fs.open(dir .. "/qq.txt", "w")
+    f.write(pass)
+    f.close()
+end
+
+
+users = {}
+selected = 1
+mode = "list"
+input = ""
+newUserName = ""
+
 function screen_render()
     mon.clear()
     if desktop_see then
@@ -122,22 +153,48 @@ function createUserMenu()
     local startY = math.floor((height - rectH) / 2) + 1
 
     table.insert(screen_renderer, function()
-        for y = 0, rectH - 1 do
-            mon.setCursorPos(startX, startY + y)
-            mon.setBackgroundColor(colors.black)
-            mon.write(string.rep(" ", rectW))
-            mon.setBackgroundColor(colors.blue)
-        end
-    end)
-    mon.setCursorPos(startX + 2, startY + 2)
-    mon.setBackgroundColor(colors.black)
-    mon.setTextColor(colors.white)
-    mon.write("Username: ")
-    local username = inputString(startX + 12, startY + 2, 20, false)
+    if UserUI.mode == "off" then return end
 
-    mon.setCursorPos(startX + 2, startY + 4)
-    mon.write("Password: ")
-    local password = inputString(startX + 12, startY + 4, 20, true)
+    local w, h = mon.getSize()
+    local x = math.floor(w / 2) - 10
+    local y = math.floor(h / 2) - 4
+
+    mon.setBackgroundColor(colors.black)
+    for i = 0, 7 do
+        mon.setCursorPos(x, y + i)
+        mon.write(string.rep(" ", 20))
+    end
+
+    mon.setCursorPos(x + 2, y)
+    mon.write("USERS")
+
+    if UserUI.mode == "list" then
+        for i, name in ipairs(UserUI.users) do
+            mon.setCursorPos(x + 2, y + i)
+            if i == UserUI.selected then
+                mon.setBackgroundColor(colors.gray)
+            else
+                mon.setBackgroundColor(colors.black)
+            end
+            mon.write(name .. "   ")
+        end
+
+        mon.setCursorPos(x + 2, y + 6)
+        mon.setBackgroundColor(colors.green)
+        mon.write("[ + ADD USER ]")
+    end
+
+    if UserUI.mode == "name" then
+        mon.setCursorPos(x + 2, y + 3)
+        mon.write("Name: " .. UserUI.input)
+    end
+
+    if UserUI.mode == "pass" then
+        mon.setCursorPos(x + 2, y + 3)
+        mon.write("Pass: " .. string.rep("*", #UserUI.input))
+    end
+end)
+
 
     -- Создание папки пользователя
     if not fs.exists("users/"..username) then
