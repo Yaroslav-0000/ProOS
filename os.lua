@@ -94,34 +94,6 @@ function getMonitor()
     return mon
 end
 
-function loadUsers()
-    UserUI.users = {}
-    if not fs.exists("users") then
-        fs.makeDir("users")
-    end
-    for _, u in ipairs(fs.list("users")) do
-        if fs.isDir("users/" .. u) then
-            table.insert(UserUI.users, u)
-        end
-    end
-end
-
-function saveUser(name, pass)
-    local dir = "users/" .. name
-    if fs.exists(dir) then return end
-    fs.makeDir(dir)
-    local f = fs.open(dir .. "/qq.txt", "w")
-    f.write(pass)
-    f.close()
-end
-
-
-users = {}
-selected = 1
-mode = "list"
-input = ""
-newUserName = ""
-
 function screen_render()
     mon.clear()
     if desktop_see then
@@ -144,57 +116,32 @@ function UNLimitedFunS()
     os.sleep(0.1)
 end
 function createUserMenu()
-    mon.setBackgroundColor(colors.blue)
     local width, height = mon.getSize()
-    local rectW = 10
-    local rectH = 6
-
+    local rectW, rectH = 30, 10
     local startX = math.floor((width - rectW) / 2) + 1
     local startY = math.floor((height - rectH) / 2) + 1
 
+    -- Рамка меню
     table.insert(screen_renderer, function()
-    if UserUI.mode == "off" then return end
-
-    local w, h = mon.getSize()
-    local x = math.floor(w / 2) - 10
-    local y = math.floor(h / 2) - 4
-
-    mon.setBackgroundColor(colors.black)
-    for i = 0, 7 do
-        mon.setCursorPos(x, y + i)
-        mon.write(string.rep(" ", 20))
-    end
-
-    mon.setCursorPos(x + 2, y)
-    mon.write("USERS")
-
-    if UserUI.mode == "list" then
-        for i, name in ipairs(UserUI.users) do
-            mon.setCursorPos(x + 2, y + i)
-            if i == UserUI.selected then
-                mon.setBackgroundColor(colors.gray)
-            else
-                mon.setBackgroundColor(colors.black)
-            end
-            mon.write(name .. "   ")
+        local prevColor = mon.getBackgroundColor()
+        mon.setBackgroundColor(colors.black)
+        for y = 0, rectH - 1 do
+            mon.setCursorPos(startX, startY + y)
+            mon.write(string.rep(" ", rectW))
         end
+        mon.setBackgroundColor(prevColor)
+    end)
 
-        mon.setCursorPos(x + 2, y + 6)
-        mon.setBackgroundColor(colors.green)
-        mon.write("[ + ADD USER ]")
-    end
+    -- Ввод имени и пароля
+    mon.setCursorPos(startX + 2, startY + 2)
+    mon.setBackgroundColor(colors.black)
+    mon.setTextColor(colors.white)
+    mon.write("Username: ")
+    local username = inputString(startX + 12, startY + 2, 20, false)
 
-    if UserUI.mode == "name" then
-        mon.setCursorPos(x + 2, y + 3)
-        mon.write("Name: " .. UserUI.input)
-    end
-
-    if UserUI.mode == "pass" then
-        mon.setCursorPos(x + 2, y + 3)
-        mon.write("Pass: " .. string.rep("*", #UserUI.input))
-    end
-end)
-
+    mon.setCursorPos(startX + 2, startY + 4)
+    mon.write("Password: ")
+    local password = inputString(startX + 12, startY + 4, 20, true)
 
     -- Создание папки пользователя
     if not fs.exists("users/"..username) then
@@ -208,6 +155,7 @@ end)
 
     mon.setCursorPos(startX + 2, startY + 6)
     mon.write("User created!")
+    os.sleep(2)
 end
 function ProOS()
     if not fs.exists("users") then
