@@ -160,6 +160,7 @@ function usersMenu()
     mon.setCursorPos(x + 6, y)
     mon.write("LOGIN")
 
+    loadUsers()
     if LoginUI.mode == "list" then
         for i, name in ipairs(LoginUI.users) do
             mon.setCursorPos(x + 2, y + i + 1)
