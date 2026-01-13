@@ -52,6 +52,7 @@ drivers_updatede_fun_s = {}
 desktop_see = false
 
 screen_renderer = {}
+events_renderer = {}
 
 function inputString(x, y, length, password)
     local str = ""
@@ -89,6 +90,9 @@ function events_chek()
         print("Exiting...")
         os.reboot()
     end
+    for i, func in ipairs(events_renderer) do
+        func()
+    end
 end
 function getMonitor()
     local mon = term
@@ -116,6 +120,111 @@ function UNLimitedFunS()
     drivers_update()
     os.sleep(0.1)
 end
+
+current_user = nil
+
+LoginUI = {
+    mode = "list",
+    users = {},
+    selected = 1,
+    input = "",
+    error = false
+}
+
+function loadUsers()
+    LoginUI.users = {}
+    for _, u in ipairs(fs.list("users")) do
+        if fs.isDir("users/" .. u) then
+            table.insert(LoginUI.users, u)
+        end
+    end
+end
+
+
+function usersMenu()
+     local width, height = mon.getSize()
+
+    table.insert(screen_renderer, function()
+    if desktop_see then return end
+
+    local w, h = mon.getSize()
+    local x = math.floor(w / 2) - 12
+    local y = math.floor(h / 2) - 6
+
+    mon.setBackgroundColor(colors.black)
+    for i = 0, 11 do
+        mon.setCursorPos(x, y + i)
+        mon.write(string.rep(" ", 24))
+    end
+
+    mon.setCursorPos(x + 6, y)
+    mon.write("LOGIN")
+
+    if LoginUI.mode == "list" then
+        for i, name in ipairs(LoginUI.users) do
+            mon.setCursorPos(x + 2, y + i + 1)
+            mon.setBackgroundColor(i == LoginUI.selected and colors.gray or colors.black)
+            mon.write(name .. "   ")
+        end
+    end
+
+    if LoginUI.mode == "password" then
+        mon.setCursorPos(x + 2, y + 4)
+        mon.setBackgroundColor(colors.black)
+        mon.write("Password:")
+
+        mon.setCursorPos(x + 2, y + 5)
+        mon.write(string.rep("*", #LoginUI.input))
+
+        if LoginUI.error then
+            mon.setCursorPos(x + 2, y + 7)
+            mon.setTextColor(colors.red)
+            mon.write("Wrong password")
+            mon.setTextColor(colors.white)
+        end
+    end
+end)
+table.insert(events_renderer, function(event, key)
+    if desktop_see then return end
+
+    if LoginUI.mode == "list" and event == "key" then
+        if key == keys.up then
+            LoginUI.selected = math.max(1, LoginUI.selected - 1)
+        elseif key == keys.down then
+            LoginUI.selected = math.min(#LoginUI.users, LoginUI.selected + 1)
+        elseif key == keys.enter then
+            LoginUI.mode = "password"
+            LoginUI.input = ""
+            LoginUI.error = false
+        end
+    end
+
+    if LoginUI.mode == "password" then
+        if event == "char" then
+            LoginUI.input = LoginUI.input .. key
+        elseif event == "key" then
+            if key == keys.backspace then
+                LoginUI.input = LoginUI.input:sub(1, -2)
+            elseif key == keys.enter then
+                local user = LoginUI.users[LoginUI.selected]
+                local f = fs.open("users/" .. user .. "/qq.txt", "r")
+                local pass = f and f.readLine() or ""
+                if f then f.close() end
+
+                if LoginUI.input == pass then
+                    current_user = user
+                    desktop_see = true
+                else
+                    LoginUI.input = ""
+                    LoginUI.error = true
+                end
+            end
+        end
+    end
+end)
+
+end
+
 function createUserMenu()
     local width, height = mon.getSize()
     local rectW, rectH = 30, 10
@@ -165,7 +274,7 @@ function ProOS()
     if #fs.list("users") == 0 then
         createUserMenu()
     else
-        desktop_see = true
+        usersMenu()
     end
 
     table.insert(desktop_renderer_fun_s, function()
