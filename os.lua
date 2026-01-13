@@ -83,11 +83,8 @@ function inputString(x, y, length, password)
 end
 
 function events_chek()
-    local event, keyCode, a = os.pullEvent("key")
-    local keyName = keys.getName(keyCode)
-    print("Key name: ", keyName)
-    if keyCode == keys.q then
-        print("Exiting...")
+    local event, a = os.pullEvent()
+    if event == "key" and a == keys.q then
         os.reboot()
     end
     for i, func in ipairs(events_renderer) do
