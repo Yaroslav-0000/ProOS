@@ -144,6 +144,7 @@ end
 function usersMenu()
      local width, height = mon.getSize()
 
+    loadUsers()
     table.insert(screen_renderer, function()
     if desktop_see then return end
 
@@ -160,7 +161,6 @@ function usersMenu()
     mon.setCursorPos(x + 6, y)
     mon.write("LOGIN")
 
-    loadUsers()
     if LoginUI.mode == "list" then
         for i, name in ipairs(LoginUI.users) do
             mon.setCursorPos(x + 2, y + i + 1)
