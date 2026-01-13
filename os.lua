@@ -83,7 +83,7 @@ function inputString(x, y, length, password)
 end
 
 function events_chek()
-    local event, keyCode = os.pullEvent("key")
+    local event, keyCode, a = os.pullEvent("key")
     local keyName = keys.getName(keyCode)
     print("Key name: ", keyName)
     if keyCode == keys.q then
