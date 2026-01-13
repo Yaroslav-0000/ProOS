@@ -45,6 +45,7 @@ if res_os then
 else
     print("Error downloading OS")
 end
+mon.clear()
 
 desktop_renderer_fun_s = {}
 drivers_updatede_fun_s = {}
