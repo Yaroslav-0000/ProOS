@@ -91,7 +91,7 @@ function events_chek()
         os.reboot()
     end
     for i, func in ipairs(events_renderer) do
-        func()
+        func(event, a)
     end
 end
 function getMonitor()
