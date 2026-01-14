@@ -168,7 +168,7 @@ function usersMenu()
 
     if LoginUI.mode == "password" then
         mon.setCursorPos(x + 2, y + 4)
-        mon.setBackgroundColor(colors.black)
+        mon.setBackgroundColor(colors.green)
         mon.write("Password:")
 
         mon.setCursorPos(x + 2, y + 5)
