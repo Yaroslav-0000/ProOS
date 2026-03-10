@@ -1,4 +1,4 @@
-print("Start-OS")
+print("Start-ProOS")
 
 running = true
 
