@@ -33,6 +33,5 @@ if res_os then
 else
     print("Error downloading OS")
 end
-end
 
 ProOS()
