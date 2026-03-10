@@ -35,6 +35,6 @@ else
 end
 
 function ProOS()
-    
+    print("123")
 end
 ProOS()
