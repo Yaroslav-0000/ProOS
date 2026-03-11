@@ -33,12 +33,14 @@ if res_os then
 else
     print("Error downloading OS")
 end
+
+gpu = peripheral.find("tm_gpu")
+
 function handleClick(x, y, isShift)
     gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
     gpu.sync()
 end
 function ProOS()
-    gpu = peripheral.find("tm_gpu")
 
     gpu.refreshSize()
     gpu.setSize(64)
