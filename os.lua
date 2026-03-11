@@ -33,8 +33,26 @@ if res_os then
 else
     print("Error downloading OS")
 end
-
+function handleClick(x, y, isShift)
+    gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
+    gpu.sync()
+end
 function ProOS()
-    print("123")
+    local gpu = peripheral.find("tm_gpu")
+
+    gpu.refreshSize()
+    gpu.setSize(128)
+
+    gpu.fill(0x333333)
+
+    gpu.sync()
+
+    while true do
+        local event, p, x, y, isShift = os.pullEvent()
+        if event == "tm_monitor_touch" then
+            handleClick(x, y, isShift)
+        end
+    end
+
 end
 ProOS()
