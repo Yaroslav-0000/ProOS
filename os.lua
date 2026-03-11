@@ -4,7 +4,7 @@ running = true
 
 local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
 
--- local res_os = http.get(url_os)
+local res_os = http.get(url_os)
 if res_os then
     local new_content = res_os.readAll()
     res_os.close()
