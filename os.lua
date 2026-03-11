@@ -64,7 +64,7 @@ function ProOS()
         end
     end
 
-    local btnW, btnH = 30, 15
+    local btnW, btnH = 46, 15
 
     local cx = math.floor(W/2 - btnW/2)
     local cy = math.floor(H/2 - btnH/2)
