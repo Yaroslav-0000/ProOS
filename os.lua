@@ -1,4 +1,3 @@
-Как добавить клаву в
 print("Start-OS")
 
 running = true
