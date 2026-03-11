@@ -2,7 +2,7 @@ print("Start-OS")
 
 running = true
 
-local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
+local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua?ts=326666616"
 
 local res_os = http.get(url_os)
 if res_os then
