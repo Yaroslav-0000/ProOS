@@ -41,7 +41,7 @@ function ProOS()
     local gpu = peripheral.find("tm_gpu")
 
     gpu.refreshSize()
-    gpu.setSize(128)
+    gpu.setSize(64)
 
     gpu.fill(0x333333)
 
