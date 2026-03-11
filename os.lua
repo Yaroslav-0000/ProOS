@@ -38,7 +38,10 @@ gpu = peripheral.find("tm_gpu")
 
 function handleClick(x, y, isShift)
     gpu.filledRectangle(x - 2, y - 2, 4, 4, 0x006CFA)
-
+    local btnW, btnH = 46, 15
+    local cx = math.floor(W/2 - btnW/2)
+    local cy = math.floor(H/2 - btnH/2)
+    
     if x >= cx and x <= cx + btnW and y >= cy and y <= cy + btnH then
         print("BTN_Click")
         gpu.filledRectangle(cx, cy, btnW, btnH, 0x00FF00)
