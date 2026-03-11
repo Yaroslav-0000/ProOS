@@ -38,6 +38,7 @@ gpu = peripheral.find("tm_gpu")
 
 function handleClick(x, y, isShift)
     gpu.filledRectangle(x - 2, y - 2, 4, 4, 0x006CFA)
+    local W, H = gpu.getSize()
     local btnW, btnH = 46, 15
     local cx = math.floor(W/2 - btnW/2)
     local cy = math.floor(H/2 - btnH/2)
