@@ -64,6 +64,17 @@ function ProOS()
         end
     end
 
+    local btnW, btnH = 30, 15
+
+    local cx = math.floor(W/2 - btnW/2)
+    local cy = math.floor(H/2 - btnH/2)
+
+    gpu.filledRectangle(cx, cy, btnW, btnH, 0x555555)
+
+    gpu.filledRectangle(cx, cy + btnH, btnW, 2, 0xAAAAAA)
+
+    gpu.filledRectangle(cx + btnW, cy, 2, btnH, 0xAAAAAA)
+
     gpu.sync()
 
     while true do
