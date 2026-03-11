@@ -37,7 +37,7 @@ end
 gpu = peripheral.find("tm_gpu")
 
 function handleClick(x, y, isShift)
-    gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
+    gpu.filledRectangle(x - 2, y - 2, 4, 4, 0x006CFA)
     gpu.sync()
 end
 function ProOS()
