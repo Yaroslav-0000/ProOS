@@ -37,17 +37,12 @@ end
 gpu = peripheral.find("tm_gpu")
 keyboard = peripheral.find("tm_keyboard")
 
-function handleClick(x, y, isShift)
-    gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
-    gpu.sync()
-end
-
-function handleKey(key, held)
-    print("key:", key, "held:", held)
+function handleKey(key)
+    print("Нажата клавиша:", key)
 end
 
 function handleChar(char)
-    print("Key:", char)
+    print("Введён символ:", char)
 end
 
 function ProOS()
@@ -57,15 +52,16 @@ function ProOS()
     gpu.sync()
 
     while true do
-        local event, p1, p2, p3, p4 = os.pullEvent()
+        local event, p1, p2 = os.pullEvent()
         if event == "tm_monitor_touch" then
-            handleClick(p2, p3, p4)
-        elseif event == "key" then
-            handleKey(p1, p2)
-        elseif event == "char" then
+            handleClick(p1, p2)
+        elseif event == "tm_key" then
+            handleKey(p1)
+        elseif event == "tm_char" then
             handleChar(p1)
         end
     end
 end
 
 ProOS()
+
