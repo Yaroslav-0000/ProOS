@@ -38,7 +38,7 @@ function handleClick(x, y, isShift)
     gpu.sync()
 end
 function ProOS()
-    local gpu = peripheral.find("tm_gpu")
+    gpu = peripheral.find("tm_gpu")
 
     gpu.refreshSize()
     gpu.setSize(64)
