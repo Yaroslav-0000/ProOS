@@ -2,8 +2,8 @@ print("Start-OS")
 
 running = true
 
+-- загрузка ОС
 local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
-
 local res_os = http.get(url_os)
 if res_os then
     local new_content = res_os.readAll()
@@ -35,26 +35,37 @@ else
 end
 
 gpu = peripheral.find("tm_gpu")
+keyboard = peripheral.find("tm_keyboard")
 
 function handleClick(x, y, isShift)
     gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
     gpu.sync()
 end
-function ProOS()
 
+function handleKey(key, held)
+    print("key:", key, "held:", held)
+end
+
+function handleChar(char)
+    print("Key:", char)
+end
+
+function ProOS()
     gpu.refreshSize()
     gpu.setSize(64)
-
     gpu.fill(0x333333)
-
     gpu.sync()
 
     while true do
-        local event, p, x, y, isShift = os.pullEvent()
+        local event, p1, p2, p3, p4 = os.pullEvent()
         if event == "tm_monitor_touch" then
-            handleClick(x, y, isShift)
+            handleClick(p2, p3, p4)
+        elseif event == "key" then
+            handleKey(p1, p2)
+        elseif event == "char" then
+            handleChar(p1)
         end
     end
-
 end
+
 ProOS()
