@@ -73,7 +73,7 @@ function ProOS()
 
     gpu.filledRectangle(cx, cy + btnH, btnW, 2, 0xAAAAAA)
 
-    gpu.filledRectangle(cx + btnW, cy, 2, btnH, 0xAAAAAA)
+    gpu.filledRectangle(cx + btnW, cy, 3, btnH, 0xAAAAAA)
 
     gpu.sync()
 
