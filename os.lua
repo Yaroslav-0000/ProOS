@@ -1,9 +1,10 @@
-print("Start-OSа")
+Как добавить клаву в
+print("Start-OS")
 
 running = true
 
--- загрузка ОС
 local url_os = "https://raw.githubusercontent.com/Yaroslav-0000/ProOS/main/os.lua"
+
 local res_os = http.get(url_os)
 if res_os then
     local new_content = res_os.readAll()
@@ -35,33 +36,26 @@ else
 end
 
 gpu = peripheral.find("tm_gpu")
-keyboard = peripheral.find("tm_keyboard")
 
-function handleKey(key)
-    print("Нажата клавиша:", key)
+function handleClick(x, y, isShift)
+    gpu.rectangle(x - 2, y - 2, 4, 4, 0x006CFA)
+    gpu.sync()
 end
-
-function handleChar(char)
-    print("Введён символ:", char)
-end
-
 function ProOS()
+
     gpu.refreshSize()
     gpu.setSize(64)
+
     gpu.fill(0x333333)
+
     gpu.sync()
 
     while true do
-        local event, p1, p2 = os.pullEvent()
+        local event, p, x, y, isShift = os.pullEvent()
         if event == "tm_monitor_touch" then
-            handleClick(p1, p2)
-        elseif event == "tm_key" then
-            handleKey(p1)
-        elseif event == "tm_char" then
-            handleChar(p1)
+            handleClick(x, y, isShift)
         end
     end
+
 end
-
 ProOS()
-
